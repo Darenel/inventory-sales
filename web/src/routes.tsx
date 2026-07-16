@@ -1,8 +1,18 @@
 import { FormEvent, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Navigate, NavLink, Outlet, RouteObject, useLocation, useNavigate } from 'react-router-dom';
 import { ProtectedRoute, useAuth } from './auth';
 import { UserRole } from './auth/storage';
-import { ApiError } from './lib/api';
+import { ApiError, api } from './lib/api';
+import { StockAlertsResponse } from './lib/types';
+import { CategoriesPage } from './pages/CategoriesPage';
+import { ClientsPage } from './pages/ClientsPage';
+import { NewSalePage } from './pages/NewSalePage';
+import { ProductsPage } from './pages/ProductsPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { SalesPage } from './pages/SalesPage';
+import { StockPage } from './pages/StockPage';
+import { SuppliersPage } from './pages/SuppliersPage';
 
 type Module = {
   path: string;
@@ -112,6 +122,12 @@ function AppLayout() {
     () => modules.filter((module) => role && module.roles.includes(role)),
     [role],
   );
+  const stockAlerts = useQuery({
+    queryKey: ['stock-alerts'],
+    queryFn: () => api<StockAlertsResponse>('/stock/alerts'),
+    enabled: role === 'admin' || role === 'almacen',
+    refetchInterval: 30000,
+  });
 
   return (
     <div className="app-layout">
@@ -122,7 +138,10 @@ function AppLayout() {
         <nav className="nav-list" aria-label="Main navigation">
           {visibleModules.map((module) => (
             <NavLink className="nav-link" key={module.path} to={`/${module.path}`}>
-              {module.label}
+              <span>{module.label}</span>
+              {module.path === 'stock' && (stockAlerts.data?.total ?? 0) > 0 ? (
+                <span className="nav-badge">{stockAlerts.data?.total}</span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
@@ -162,10 +181,15 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
-          ...modules.map((module) => ({
-            path: module.path,
-            element: <PlaceholderPage title={module.label} />,
-          })),
+          { path: 'dashboard', element: <PlaceholderPage title="Dashboard" /> },
+          { path: 'products', element: <ProductsPage /> },
+          { path: 'categories', element: <CategoriesPage /> },
+          { path: 'clients', element: <ClientsPage /> },
+          { path: 'suppliers', element: <SuppliersPage /> },
+          { path: 'sales', element: <SalesPage /> },
+          { path: 'sales/new', element: <NewSalePage /> },
+          { path: 'stock', element: <StockPage /> },
+          { path: 'reports', element: <ReportsPage /> },
         ],
       },
     ],
