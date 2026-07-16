@@ -7,6 +7,7 @@ import { ApiError, api } from './lib/api';
 import { StockAlertsResponse } from './lib/types';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { ClientsPage } from './pages/ClientsPage';
+import { DashboardPage } from './pages/DashboardPage';
 import { NewSalePage } from './pages/NewSalePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { ReportsPage } from './pages/ReportsPage';
@@ -181,7 +182,7 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <Navigate to="/dashboard" replace /> },
-          { path: 'dashboard', element: <PlaceholderPage title="Dashboard" /> },
+          { path: 'dashboard', element: <DashboardPage /> },
           { path: 'products', element: <ProductsPage /> },
           { path: 'categories', element: <CategoriesPage /> },
           { path: 'clients', element: <ClientsPage /> },
