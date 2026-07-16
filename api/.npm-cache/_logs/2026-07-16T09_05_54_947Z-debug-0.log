@@ -1,0 +1,42 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.13.0
+2 info using node@v26.2.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:F:\Me\Projects\inventory-sales\api\.npmrc
+5 silly config load:file:C:\Users\Daenhel\.npmrc
+6 silly config load:file:C:\Users\Daenhel\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install pdfkit@0.17.2 @types/pdfkit@0.17.3
+8 verbose argv "install" "pdfkit@0.17.2" "@types/pdfkit@0.17.3" "--save" "--cache" ".\\.npm-cache" "--prefer-online"
+9 verbose logfile logs-max:10 dir:F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T09_05_54_947Z-
+10 verbose logfile F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T09_05_54_947Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4395630592 maxSize:1098907648 maxEntrySize:549453824
+13 silly idealTree buildDeps
+14 silly fetch manifest pdfkit@0.17.2
+15 silly packumentCache full:https://registry.npmjs.org/pdfkit cache-miss
+16 silly fetch manifest @types/pdfkit@0.17.3
+17 silly packumentCache full:https://registry.npmjs.org/@types%2fpdfkit cache-miss
+18 silly placeDep ROOT @types/pdfkit@ OK for: inventory-sales-api@0.1.0 want: 0.17.3
+19 silly placeDep ROOT pdfkit@ OK for: inventory-sales-api@0.1.0 want: 0.17.2
+20 verbose stack Error: request to https://registry.npmjs.org/@types%2fpdfkit failed: cache mode is 'only-if-cached' but no cached response is available.
+20 verbose stack     at cacheFetch (C:\Program Files\nodejs\node_modules\npm\node_modules\make-fetch-happen\lib\cache\index.js:12:13)
+20 verbose stack     at async fetch (C:\Program Files\nodejs\node_modules\npm\node_modules\make-fetch-happen\lib\fetch.js:98:7)
+20 verbose stack     at async RegistryFetcher.packument (C:\Program Files\nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:90:19)
+20 verbose stack     at async RegistryFetcher.manifest (C:\Program Files\nodejs\node_modules\npm\node_modules\pacote\lib\registry.js:128:23)
+20 verbose stack     at async #fetchManifest (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1217:20)
+20 verbose stack     at async #nodeFromEdge (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1054:19)
+20 verbose stack     at async #buildDepStep (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:917:11)
+20 verbose stack     at async Arborist.buildIdealTree (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:170:7)
+20 verbose stack     at async Promise.all (index 1)
+20 verbose stack     at async Arborist.reify (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:111:5)
+21 error code ENOTCACHED
+22 error request to https://registry.npmjs.org/@types%2fpdfkit failed: cache mode is 'only-if-cached' but no cached response is available.
+23 silly unfinished npm timer reify 1784192755421
+24 silly unfinished npm timer reify:loadTrees 1784192755421
+25 verbose cwd F:\Me\Projects\inventory-sales\api
+26 verbose os Windows_NT 10.0.26100
+27 verbose node v26.2.0
+28 verbose npm  v11.13.0
+29 verbose exit 1
+30 verbose code 1
+31 error A complete log of this run can be found in: F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T09_05_54_947Z-debug-0.log
