@@ -1,0 +1,24 @@
+:root {
+  --paper: #14171c;
+  --panel: #1c2027;
+  --line: #262b33;
+  --ink: #e8eaed;
+  --muted: #a6adb8;
+  --quiet: #6d7480;
+
+  --menta: #6fcfb2;
+  --ambar: #e0b45c;
+  --coral: #e07862;
+
+  --menta-soft: rgba(111, 207, 178, 0.16);
+  --ambar-soft: rgba(224, 180, 92, 0.16);
+  --coral-soft: rgba(224, 120, 98, 0.16);
+
+  --r-cut: 0 10px 0 10px;
+  --r-cut-sm: 0 6px 0 6px;
+  --r-cut-lg: 0 16px 0 16px;
+
+  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.28);
+  --font-ui: "Sora Variable", "Sora", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
