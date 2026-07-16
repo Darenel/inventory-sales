@@ -1,5 +1,7 @@
 # Inventory Sales
 
+![Inventory Sales](docs/cover.png)
+
 Inventory Sales is a small inventory, sales, and reporting app for teams that need products, stock movements, clients, and sales in one place. It includes a NestJS API, a React web client, PostgreSQL persistence, role-based access, and CSV/PDF reporting.
 
 ## Features
