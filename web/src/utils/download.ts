@@ -1,5 +1,6 @@
 import { readAuthSession } from '../auth/storage';
-import { ApiError } from '../lib/api';
+import { DemoRequestError, demoDownload } from '../demo/server';
+import { ApiError, isDemoMode } from '../lib/api';
 
 function parseFilename(header: string | null, fallback: string) {
   if (!header) {
@@ -16,6 +17,19 @@ function parseFilename(header: string | null, fallback: string) {
 }
 
 export async function downloadAuthenticated(path: string, fallbackFilename: string) {
+  if (isDemoMode) {
+    try {
+      const report = await demoDownload(path, fallbackFilename);
+      saveBlob(report.blob, report.filename);
+      return;
+    } catch (error) {
+      if (error instanceof DemoRequestError) {
+        throw new ApiError({ status: error.status, message: error.message });
+      }
+      throw error;
+    }
+  }
+
   const session = readAuthSession();
   const headers = new Headers();
 
@@ -40,10 +54,14 @@ export async function downloadAuthenticated(path: string, fallbackFilename: stri
   }
 
   const blob = await response.blob();
+  saveBlob(blob, parseFilename(response.headers.get('Content-Disposition'), fallbackFilename));
+}
+
+function saveBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = parseFilename(response.headers.get('Content-Disposition'), fallbackFilename);
+  link.download = filename;
   document.body.append(link);
   link.click();
   link.remove();

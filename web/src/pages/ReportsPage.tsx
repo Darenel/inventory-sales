@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { FormField } from '../components/FormField';
+import { isDemoMode } from '../lib/api';
 import { downloadAuthenticated } from '../utils/download';
 import { buildQuery, toErrorMessage } from './pageUtils';
 
@@ -70,8 +71,9 @@ export function ReportsPage() {
             <FormField label="To" type="date" value={salesTo} onChange={(event) => setSalesTo(event.target.value)} />
             <FormField label="Format" as="select" value={salesFormat} onChange={(event) => setSalesFormat(event.target.value as ReportFormat)}>
               <option value="csv">CSV</option>
-              <option value="pdf">PDF</option>
+              {!isDemoMode ? <option value="pdf">PDF</option> : null}
             </FormField>
+            {isDemoMode ? <p className="muted-text">Demo reports export CSV only.</p> : null}
           </div>
           {salesError ? <div className="error-box">{salesError}</div> : null}
           <button type="submit" className="primary" disabled={downloading === 'sales'}>
@@ -84,8 +86,9 @@ export function ReportsPage() {
           <div className="form-grid">
             <FormField label="Format" as="select" value={stockFormat} onChange={(event) => setStockFormat(event.target.value as ReportFormat)}>
               <option value="csv">CSV</option>
-              <option value="pdf">PDF</option>
+              {!isDemoMode ? <option value="pdf">PDF</option> : null}
             </FormField>
+            {isDemoMode ? <p className="muted-text">Demo reports export CSV only.</p> : null}
           </div>
           {stockError ? <div className="error-box">{stockError}</div> : null}
           <button type="submit" className="primary" disabled={downloading === 'stock'}>

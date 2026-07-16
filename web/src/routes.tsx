@@ -22,6 +22,7 @@ type Module = {
 };
 
 const allRoles: UserRole[] = ['admin', 'vendedor', 'almacen'];
+const isDemoMode = import.meta.env.VITE_MODE === 'demo';
 
 export const modules: Module[] = [
   { path: 'dashboard', label: 'Dashboard', roles: ['admin'] },
@@ -70,6 +71,7 @@ function LoginPage() {
           Inventory
         </h1>
         <p className="login-copy">Sign in to manage inventory, sales, and stock operations.</p>
+        {isDemoMode ? <p className="demo-note">Demo mode - data resets on reload.</p> : null}
 
         <form className="login-form" onSubmit={handleSubmit}>
           <label>
