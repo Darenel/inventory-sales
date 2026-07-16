@@ -1,0 +1,52 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.13.0
+2 info using node@v26.2.0
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:F:\Me\Projects\inventory-sales\api\.npmrc
+5 silly config load:file:C:\Users\Daenhel\.npmrc
+6 silly config load:file:C:\Users\Daenhel\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm view bcrypt version
+8 verbose argv "view" "bcrypt" "version" "--cache" ".\\.npm-cache" "--prefer-online" "--offline" "false"
+9 verbose logfile logs-max:10 dir:F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T08_13_21_438Z-
+10 verbose logfile F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T08_13_21_438Z-debug-0.log
+11 silly logfile done cleaning log files
+12 http fetch GET https://registry.npmjs.org/npm attempt 1 failed with ECONNREFUSED
+13 http fetch GET https://registry.npmjs.org/bcrypt attempt 1 failed with ECONNREFUSED
+14 http fetch GET https://registry.npmjs.org/npm attempt 2 failed with ECONNREFUSED
+15 http fetch GET https://registry.npmjs.org/bcrypt attempt 2 failed with ECONNREFUSED
+16 http fetch GET https://registry.npmjs.org/npm attempt 3 failed with ECONNREFUSED
+17 http fetch GET https://registry.npmjs.org/bcrypt attempt 3 failed with ECONNREFUSED
+18 verbose type system
+19 verbose stack FetchError: request to https://registry.npmjs.org/bcrypt failed, reason: connect ECONNREFUSED 127.0.0.1:9
+19 verbose stack     at ClientRequest.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\minipass-fetch\lib\index.js:130:14)
+19 verbose stack     at ClientRequest.emit (node:events:509:20)
+19 verbose stack     at emitErrorEvent (node:_http_client:109:11)
+19 verbose stack     at _destroy (node:_http_client:993:9)
+19 verbose stack     at onSocketNT (node:_http_client:1014:5)
+19 verbose stack     at process.processTicksAndRejections (node:internal/process/task_queues:91:21)
+20 error code ECONNREFUSED
+21 error syscall connect
+22 error errno ECONNREFUSED
+23 error FetchError: request to https://registry.npmjs.org/bcrypt failed, reason: connect ECONNREFUSED 127.0.0.1:9
+23 error     at ClientRequest.<anonymous> (C:\Program Files\nodejs\node_modules\npm\node_modules\minipass-fetch\lib\index.js:130:14)
+23 error     at ClientRequest.emit (node:events:509:20)
+23 error     at emitErrorEvent (node:_http_client:109:11)
+23 error     at _destroy (node:_http_client:993:9)
+23 error     at onSocketNT (node:_http_client:1014:5)
+23 error     at process.processTicksAndRejections (node:internal/process/task_queues:91:21) {
+23 error   code: 'ECONNREFUSED',
+23 error   errno: 'ECONNREFUSED',
+23 error   syscall: 'connect',
+23 error   address: '127.0.0.1',
+23 error   port: 9,
+23 error   type: 'system'
+23 error }
+24 error
+24 error If you are behind a proxy, please make sure that the 'proxy' config is set properly.  See: 'npm help config'
+25 verbose cwd F:\Me\Projects\inventory-sales\api
+26 verbose os Windows_NT 10.0.26100
+27 verbose node v26.2.0
+28 verbose npm  v11.13.0
+29 verbose exit 1
+30 verbose code 1
+31 error A complete log of this run can be found in: F:\Me\Projects\inventory-sales\api\.npm-cache\_logs\2026-07-16T08_13_21_438Z-debug-0.log

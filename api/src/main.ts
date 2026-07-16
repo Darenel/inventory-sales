@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import 'reflect-metadata';
 import { AppModule } from './app.module';
 
@@ -14,9 +15,17 @@ async function bootstrap() {
     }),
   );
 
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Inventory Sales API')
+    .setDescription('Inventory, sales, and reporting API')
+    .setVersion('0.1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document);
+
   const port = Number(process.env.API_PORT ?? 3000);
   await app.listen(port);
 }
 
 void bootstrap();
-
