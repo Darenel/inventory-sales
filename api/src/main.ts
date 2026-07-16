@@ -22,7 +22,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    jsonDocumentUrl: 'docs-json',
+    yamlDocumentUrl: 'docs-yaml',
+    swaggerOptions: {
+      url: './docs-json',
+    },
+  });
 
   const port = Number(process.env.API_PORT ?? 3000);
   await app.listen(port);

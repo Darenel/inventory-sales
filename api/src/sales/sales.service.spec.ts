@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Prisma, Role, StockMovementType } from '@prisma/client';
 import { AuthUser } from '../auth/auth.types';
 import { PrismaService } from '../prisma/prisma.service';
@@ -136,6 +136,27 @@ describe('SalesService', () => {
     expect(tx.sale.create).not.toHaveBeenCalled();
     expect(tx.product.updateMany).not.toHaveBeenCalled();
     expect(tx.stockMovement.createMany).not.toHaveBeenCalled();
+  });
+
+  it('maps missing clients to not found when Prisma reports a foreign key error', async () => {
+    tx.product.findMany.mockResolvedValue([product]);
+    tx.sale.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Foreign key constraint failed', {
+        code: 'P2003',
+        clientVersion: 'test',
+        meta: { field_name: 'Sale_clientId_fkey' },
+      }),
+    );
+
+    await expect(
+      service.create(
+        {
+          clientId: 'missing-client',
+          items: [{ productId: 'product-1', qty: 2 }],
+        },
+        user,
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('ignores payload prices and uses the product row price', async () => {
