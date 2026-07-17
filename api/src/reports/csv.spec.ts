@@ -7,6 +7,11 @@ describe('csv helpers', () => {
     expect(escapeCsvValue('line one\nline two')).toBe('"line one\nline two"');
   });
 
+  it('guards formula-like strings without changing negative numbers', () => {
+    expect(escapeCsvValue('=SUM(A1)')).toBe("'=SUM(A1)");
+    expect(escapeCsvValue(-42)).toBe('-42');
+  });
+
   it('builds a csv document with a header row', () => {
     expect(
       buildCsv(

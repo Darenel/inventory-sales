@@ -9,7 +9,8 @@ export function escapeCsvValue(value: CsvValue) {
     return '';
   }
 
-  const text = value instanceof Date ? value.toISOString() : String(value);
+  const rawText = value instanceof Date ? value.toISOString() : String(value);
+  const text = typeof value === 'string' && /^[=+\-@]/.test(value) ? `'${rawText}` : rawText;
 
   if (!/[",\r\n]/.test(text)) {
     return text;

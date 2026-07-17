@@ -7,6 +7,7 @@ import { LangToggle } from './i18n/LangToggle';
 import { TranslationKey } from './i18n/translations';
 import { useI18n } from './i18n/I18nContext';
 import { ApiError, api } from './lib/api';
+import { getTheme, setTheme } from './lib/theme';
 import { StockAlertsResponse } from './lib/types';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { ClientsPage } from './pages/ClientsPage';
@@ -37,6 +38,23 @@ export const modules: Module[] = [
   { path: 'stock', labelKey: 'module.stock', roles: ['admin', 'almacen'] },
   { path: 'reports', labelKey: 'module.reports', roles: ['admin'] },
 ];
+
+function ThemeToggle() {
+  const { t } = useI18n();
+  const [theme, setCurrentTheme] = useState(getTheme);
+
+  function toggleTheme() {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    setCurrentTheme(nextTheme);
+  }
+
+  return (
+    <button className="theme-toggle" type="button" aria-label={t('nav.toggleTheme')} onClick={toggleTheme}>
+      <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+    </button>
+  );
+}
 
 function LoginPage() {
   const { login, token } = useAuth();
@@ -71,6 +89,7 @@ function LoginPage() {
   return (
     <main className="login-page">
       <div className="login-lang">
+        <ThemeToggle />
         <LangToggle />
       </div>
       <section className="panel login-panel" aria-labelledby="login-title">
@@ -157,6 +176,7 @@ function AppLayout() {
           ))}
         </nav>
         <div className="sidebar-footer">
+          <ThemeToggle />
           <LangToggle />
         </div>
       </aside>

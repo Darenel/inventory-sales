@@ -12,6 +12,10 @@
   color-scheme: dark;
 }
 
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -109,7 +113,7 @@ textarea {
   border-radius: var(--r-cut);
   padding: 0 12px;
   color: var(--ink);
-  background: rgba(20, 23, 28, 0.72);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
 }
 
 textarea {
@@ -149,7 +153,7 @@ th {
 .panel {
   border: 1px solid var(--line);
   border-radius: var(--r-cut-lg);
-  background: rgba(28, 32, 39, 0.88);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
   box-shadow: var(--shadow-panel);
 }
 
@@ -165,6 +169,9 @@ th {
   position: fixed;
   top: 18px;
   right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .login-panel {
@@ -214,7 +221,7 @@ th {
 .hint-box {
   margin-top: 22px;
   color: var(--muted);
-  background: rgba(20, 23, 28, 0.62);
+  background: color-mix(in srgb, var(--paper) 62%, transparent);
 }
 
 .hint-box p {
@@ -248,7 +255,7 @@ th {
   gap: 28px;
   border-right: 1px solid var(--line);
   padding: 24px 18px;
-  background: rgba(20, 23, 28, 0.9);
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
 }
 
 .sidebar-brand {
@@ -265,6 +272,9 @@ th {
 
 .sidebar-footer {
   margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .nav-link {
@@ -302,7 +312,7 @@ th {
   border-radius: var(--r-cut-sm);
   padding: 3px 8px;
   color: var(--muted);
-  background: rgba(20, 23, 28, 0.72);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1;
@@ -342,7 +352,7 @@ th {
   gap: 14px;
   border-bottom: 1px solid var(--line);
   padding: 0 28px;
-  background: rgba(20, 23, 28, 0.52);
+  background: color-mix(in srgb, var(--paper) 52%, transparent);
 }
 
 .user-name {
@@ -454,7 +464,7 @@ th {
   border: 1px solid var(--line);
   border-radius: var(--r-cut);
   padding: 0 12px;
-  background: rgba(20, 23, 28, 0.72);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
 }
 
 .inline-check input {
@@ -728,7 +738,7 @@ th {
 }
 
 .stat-tile-quiet {
-  background: rgba(28, 32, 39, 0.58);
+  background: color-mix(in srgb, var(--panel) 58%, transparent);
   box-shadow: none;
 }
 
@@ -784,7 +794,7 @@ th {
   border: 1px solid var(--line);
   border-radius: var(--r-cut);
   overflow: hidden;
-  background: rgba(20, 23, 28, 0.72);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
 }
 
 .range-toggle button {
@@ -815,7 +825,7 @@ th {
   border-radius: var(--r-cut);
   padding: 4px 6px;
   color: var(--quiet);
-  background: rgba(20, 23, 28, 0.72);
+  background: color-mix(in srgb, var(--paper) 72%, transparent);
   font-family: var(--font-mono);
   font-size: 12px;
 }
@@ -834,6 +844,13 @@ th {
 .lang-toggle button.active {
   color: var(--paper);
   background: var(--menta);
+}
+
+.theme-toggle {
+  min-width: 38px;
+  min-height: 38px;
+  padding: 0;
+  font-size: 18px;
 }
 
 .chart-frame {

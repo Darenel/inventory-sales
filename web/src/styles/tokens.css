@@ -26,3 +26,22 @@
   --font-ui: "Sora Variable", "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
 }
+
+[data-theme="light"] {
+  --paper: #fafaf7;
+  --panel: #ffffff;
+  --line: #e4e4de;
+  --ink: #1a2233;
+  --muted: #5a6272;
+  --quiet: #9298a4;
+  --menta: #177e54;
+  --ambar: #8a6d1f;
+  --coral: #c7431f;
+  --chart-1: #177e54;
+  --chart-2: #b8860b;
+  --chart-3: #c7431f;
+  --menta-soft: rgba(23, 126, 84, 0.1);
+  --ambar-soft: rgba(138, 109, 31, 0.12);
+  --coral-soft: rgba(199, 67, 31, 0.1);
+  --shadow-panel: 0 24px 80px rgba(26, 34, 51, 0.1);
+}
