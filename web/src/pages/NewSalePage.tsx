@@ -5,6 +5,7 @@ import { RoleGate } from '../auth';
 import { DataTable, DataTableColumn } from '../components/DataTable';
 import { FormField } from '../components/FormField';
 import { SearchInput } from '../components/SearchInput';
+import { useI18n } from '../i18n/I18nContext';
 import { api } from '../lib/api';
 import { Client, ListResponse, Product, Sale } from '../lib/types';
 import { formatCurrency, formatDate } from '../utils/format';
@@ -16,6 +17,7 @@ type CartLine = {
 };
 
 export function NewSalePage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [clientId, setClientId] = useState('');
@@ -60,20 +62,20 @@ export function NewSalePage() {
         queryClient.invalidateQueries({ queryKey: ['stock-alerts'] }),
       ]);
     },
-    onError: (caught) => setError(toErrorMessage(caught)),
+    onError: (caught) => setError(toErrorMessage(caught, t('common.requestFailed'))),
   });
 
   const productColumns: DataTableColumn<Product>[] = [
-    { key: 'sku', header: 'SKU', render: (product) => product.sku },
-    { key: 'name', header: 'Name', render: (product) => product.name },
-    { key: 'price', header: 'Price', render: (product) => formatCurrency(product.price) },
-    { key: 'stock', header: 'Stock', render: (product) => product.stock },
+    { key: 'sku', header: t('common.sku'), render: (product) => product.sku },
+    { key: 'name', header: t('common.name'), render: (product) => product.name },
+    { key: 'price', header: t('common.price'), render: (product) => formatCurrency(product.price) },
+    { key: 'stock', header: t('common.stock'), render: (product) => product.stock },
     {
       key: 'actions',
-      header: '',
+      header: t('common.actions'),
       render: (product) => (
         <button type="button" className="ghost" disabled={product.stock <= 0} onClick={() => addProduct(product)}>
-          Add
+          {t('common.add')}
         </button>
       ),
     },
@@ -112,7 +114,7 @@ export function NewSalePage() {
     setError(null);
 
     if (cart.length === 0) {
-      setError('Add at least one product.');
+      setError(t('sale.addAtLeastOneProduct'));
       return;
     }
 
@@ -124,17 +126,17 @@ export function NewSalePage() {
       <section className="module-page">
         <header className="page-header">
           <div>
-            <p className="eyebrow">Sales</p>
-            <h1>New sale</h1>
+            <p className="eyebrow">{t('module.sales')}</p>
+            <h1>{t('sale.newSale')}</h1>
           </div>
-          <Link className="button ghost" to="/sales">Back to sales</Link>
+          <Link className="button ghost" to="/sales">{t('sale.backToSales')}</Link>
         </header>
 
         {createdSale ? (
           <div className="panel success-panel">
-            <h2>Sale created</h2>
+            <h2>{t('sale.saleCreated')}</h2>
             <p>
-              Sale {createdSale.id.slice(0, 8)} was created on {formatDate(createdSale.createdAt)} for {formatCurrency(createdSale.total)}.
+              {t('sale.saleCreatedPrefix')} {createdSale.id.slice(0, 8)} {t('sale.saleCreatedMiddle')} {formatDate(createdSale.createdAt)} {t('sale.saleCreatedFor')} {formatCurrency(createdSale.total)}.
             </p>
           </div>
         ) : null}
@@ -142,43 +144,43 @@ export function NewSalePage() {
         <div className="sale-layout">
           <div className="panel module-panel">
             <div className="toolbar">
-              <SearchInput value={search} onChange={setSearch} placeholder="Search products" />
+              <SearchInput value={search} onChange={setSearch} placeholder={t('search.products')} />
             </div>
             <DataTable columns={productColumns} rows={products.data?.data ?? []} getRowKey={(product) => product.id} loading={products.isLoading} />
           </div>
 
           <form className="panel module-panel cart-panel" onSubmit={handleSubmit}>
-            <FormField label="Client" as="select" value={clientId} onChange={(event) => setClientId(event.target.value)}>
-              <option value="">Walk-in</option>
+            <FormField label={t('common.client')} as="select" value={clientId} onChange={(event) => setClientId(event.target.value)}>
+              <option value="">{t('common.walkIn')}</option>
               {(clients.data?.data ?? []).map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
             </FormField>
 
             <div className="cart-lines">
-              {cart.length === 0 ? <p className="muted-text">No products added.</p> : null}
+              {cart.length === 0 ? <p className="muted-text">{t('sale.noProductsAdded')}</p> : null}
               {cart.map((line) => (
                 <div className="cart-line" key={line.product.id}>
                   <div>
                     <strong>{line.product.sku}</strong>
                     <span>{line.product.name}</span>
-                    <small>{formatCurrency(line.product.price)} each</small>
+                    <small>{formatCurrency(line.product.price)} {t('sale.each')}</small>
                   </div>
-                  <input type="number" min="1" max={line.product.stock} value={line.qty} onChange={(event) => setQty(line.product.id, Number(event.target.value))} aria-label={`Quantity for ${line.product.name}`} />
+                  <input type="number" min="1" max={line.product.stock} value={line.qty} onChange={(event) => setQty(line.product.id, Number(event.target.value))} aria-label={`${t('sale.quantityFor')} ${line.product.name}`} />
                   <strong>{formatCurrency(Number(line.product.price) * line.qty)}</strong>
-                  <button type="button" className="ghost danger-text" onClick={() => removeLine(line.product.id)}>Remove</button>
+                  <button type="button" className="ghost danger-text" onClick={() => removeLine(line.product.id)}>{t('common.remove')}</button>
                 </div>
               ))}
             </div>
 
             <div className="cart-total">
-              <span>Total</span>
+              <span>{t('common.total')}</span>
               <strong>{formatCurrency(total)}</strong>
             </div>
 
             {error ? <div className="error-box">{error}</div> : null}
-            {clientId ? <p className="muted-text">Client: {clientNames.get(clientId)}</p> : null}
+            {clientId ? <p className="muted-text">{t('sale.clientPrefix')} {clientNames.get(clientId)}</p> : null}
 
             <button type="submit" className="primary" disabled={createSale.isPending}>
-              {createSale.isPending ? 'Creating...' : 'Create sale'}
+              {createSale.isPending ? t('common.creating') : t('sale.createSale')}
             </button>
           </form>
         </div>

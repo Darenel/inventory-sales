@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
+import { useI18n } from '../i18n/I18nContext';
 
 type ModalProps = {
   title: string;
@@ -18,6 +19,7 @@ const focusableSelector = [
 ].join(',');
 
 export function Modal({ title, open, onClose, children, size = 'normal' }: ModalProps) {
+  const { t } = useI18n();
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -85,7 +87,7 @@ export function Modal({ title, open, onClose, children, size = 'normal' }: Modal
       >
         <header className="modal-header">
           <h2 id={titleId}>{title}</h2>
-          <button className="ghost icon-button" type="button" aria-label="Close" onClick={onClose}>
+          <button className="ghost icon-button" type="button" aria-label={t('common.close')} onClick={onClose}>
             ×
           </button>
         </header>

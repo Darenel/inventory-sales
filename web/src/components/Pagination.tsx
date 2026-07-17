@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/I18nContext';
+
 type PaginationProps = {
   page: number;
   limit: number;
@@ -6,6 +8,7 @@ type PaginationProps = {
 };
 
 export function Pagination({ page, limit, total, onPageChange }: PaginationProps) {
+  const { t } = useI18n();
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(total, page * limit);
@@ -13,17 +16,17 @@ export function Pagination({ page, limit, total, onPageChange }: PaginationProps
   return (
     <div className="pagination">
       <span>
-        {start}-{end} of {total}
+        {start}-{end} {t('pagination.of')} {total}
       </span>
       <div className="pagination-controls">
         <button type="button" className="ghost" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          Previous
+          {t('common.previous')}
         </button>
         <span>
-          Page {page} of {totalPages}
+          {t('common.page')} {page} {t('pagination.of')} {totalPages}
         </span>
         <button type="button" className="ghost" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
-          Next
+          {t('common.next')}
         </button>
       </div>
     </div>

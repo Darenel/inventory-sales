@@ -6,6 +6,7 @@ import { DataTable, DataTableColumn } from '../components/DataTable';
 import { FormField } from '../components/FormField';
 import { Modal } from '../components/Modal';
 import { Pagination } from '../components/Pagination';
+import { useI18n } from '../i18n/I18nContext';
 import { api } from '../lib/api';
 import { Client, ListResponse, Product, Sale, SaleSummary, SortDir } from '../lib/types';
 import { formatCurrency, formatDate } from '../utils/format';
@@ -21,6 +22,7 @@ function asDayStart(value: string) {
 
 export function SalesPage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [page, setPage] = useState(1);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -75,56 +77,56 @@ export function SalesPage() {
   const selectedSale = selectedSaleId ? saleDetails.get(selectedSaleId) : null;
 
   const columns: DataTableColumn<SaleSummary>[] = [
-    { key: 'createdAt', header: 'Date', sortable: true, render: (sale) => formatDate(sale.createdAt) },
-    { key: 'seller', header: 'Seller', render: (sale) => (sale.sellerId === user?.id ? user.name : sale.sellerId.slice(0, 8)) },
-    { key: 'client', header: 'Client', render: (sale) => (sale.clientId ? clientNames.get(sale.clientId) ?? sale.clientId.slice(0, 8) : 'Walk-in') },
-    { key: 'total', header: 'Total', sortable: true, render: (sale) => formatCurrency(sale.total) },
-    { key: 'items', header: 'Items', render: (sale) => saleDetails.get(sale.id)?.items.length ?? '...' },
+    { key: 'createdAt', header: t('common.date'), sortable: true, render: (sale) => formatDate(sale.createdAt) },
+    { key: 'seller', header: t('common.seller'), render: (sale) => (sale.sellerId === user?.id ? user.name : sale.sellerId.slice(0, 8)) },
+    { key: 'client', header: t('common.client'), render: (sale) => (sale.clientId ? clientNames.get(sale.clientId) ?? sale.clientId.slice(0, 8) : t('common.walkIn')) },
+    { key: 'total', header: t('common.total'), sortable: true, render: (sale) => formatCurrency(sale.total) },
+    { key: 'items', header: t('common.items'), render: (sale) => saleDetails.get(sale.id)?.items.length ?? '...' },
   ];
 
   return (
     <section className="module-page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Sales</p>
-          <h1>Sales</h1>
+          <p className="eyebrow">{t('module.sales')}</p>
+          <h1>{t('page.sales.title')}</h1>
         </div>
         <RoleGate allow={['admin', 'vendedor']}>
-          <Link className="button primary" to="/sales/new">New sale</Link>
+          <Link className="button primary" to="/sales/new">{t('sale.newSale')}</Link>
         </RoleGate>
       </header>
 
       <div className="panel module-panel">
         <div className="toolbar">
-          <FormField label="From" type="date" value={from} onChange={(event) => { setFrom(event.target.value); setPage(1); }} />
-          <FormField label="To" type="date" value={to} onChange={(event) => { setTo(event.target.value); setPage(1); }} />
+          <FormField label={t('common.from')} type="date" value={from} onChange={(event) => { setFrom(event.target.value); setPage(1); }} />
+          <FormField label={t('common.to')} type="date" value={to} onChange={(event) => { setTo(event.target.value); setPage(1); }} />
         </div>
         <DataTable columns={columns} rows={sales.data?.data ?? []} getRowKey={(sale) => sale.id} loading={sales.isLoading} sortBy={sortBy} sortDir={sortDir} onSort={(nextSortBy, nextSortDir) => { setSortBy(nextSortBy); setSortDir(nextSortDir); }} onRowClick={(sale) => setSelectedSaleId(sale.id)} />
         <Pagination page={page} limit={sales.data?.limit ?? pageLimit} total={sales.data?.total ?? 0} onPageChange={setPage} />
       </div>
 
-      <Modal open={Boolean(selectedSaleId)} title="Sale details" onClose={() => setSelectedSaleId(null)} size="wide">
+      <Modal open={Boolean(selectedSaleId)} title={t('sale.saleDetails')} onClose={() => setSelectedSaleId(null)} size="wide">
         <div className="modal-body">
           {selectedSale ? (
             <>
               <div className="detail-grid">
-                <span>Date</span><strong>{formatDate(selectedSale.createdAt)}</strong>
-                <span>Client</span><strong>{selectedSale.clientId ? clientNames.get(selectedSale.clientId) ?? selectedSale.clientId : 'Walk-in'}</strong>
-                <span>Total</span><strong>{formatCurrency(selectedSale.total)}</strong>
+                <span>{t('common.date')}</span><strong>{formatDate(selectedSale.createdAt)}</strong>
+                <span>{t('common.client')}</span><strong>{selectedSale.clientId ? clientNames.get(selectedSale.clientId) ?? selectedSale.clientId : t('common.walkIn')}</strong>
+                <span>{t('common.total')}</span><strong>{formatCurrency(selectedSale.total)}</strong>
               </div>
               <DataTable
                 columns={[
-                  { key: 'product', header: 'Product', render: (item) => productNames.get(item.productId) ?? item.productId },
-                  { key: 'qty', header: 'Qty', render: (item) => item.qty },
-                  { key: 'unitPrice', header: 'Unit price', render: (item) => formatCurrency(item.unitPrice) },
-                  { key: 'lineTotal', header: 'Line total', render: (item) => formatCurrency(Number(item.unitPrice) * item.qty) },
+                  { key: 'product', header: t('common.product'), render: (item) => productNames.get(item.productId) ?? item.productId },
+                  { key: 'qty', header: t('common.qty'), render: (item) => item.qty },
+                  { key: 'unitPrice', header: t('common.unitPrice'), render: (item) => formatCurrency(item.unitPrice) },
+                  { key: 'lineTotal', header: t('sale.lineTotal'), render: (item) => formatCurrency(Number(item.unitPrice) * item.qty) },
                 ]}
                 rows={selectedSale.items}
                 getRowKey={(item) => item.id}
               />
             </>
           ) : (
-            <p>Loading sale...</p>
+            <p>{t('sale.loadingSale')}</p>
           )}
         </div>
       </Modal>

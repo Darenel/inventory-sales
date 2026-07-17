@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { useI18n } from '../i18n/I18nContext';
 
 type SearchInputProps = {
   value: string;
@@ -7,7 +8,8 @@ type SearchInputProps = {
   delay?: number;
 };
 
-export function SearchInput({ value, onChange, placeholder = 'Search', delay = 300 }: SearchInputProps) {
+export function SearchInput({ value, onChange, placeholder, delay = 300 }: SearchInputProps) {
+  const { t } = useI18n();
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export function SearchInput({ value, onChange, placeholder = 'Search', delay = 3
       className="search-input"
       type="search"
       value={localValue}
-      placeholder={placeholder}
+      placeholder={placeholder ?? t('common.search')}
       onChange={handleChange}
     />
   );

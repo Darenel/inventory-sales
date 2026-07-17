@@ -23,7 +23,7 @@ export function buildQuery(params: Record<string, string | number | boolean | un
   return query ? `?${query}` : '';
 }
 
-export function toErrorMessage(error: unknown, fallback = 'Request failed.') {
+export function toErrorMessage(error: unknown, fallback: string) {
   return error instanceof ApiError ? error.message : fallback;
 }
 

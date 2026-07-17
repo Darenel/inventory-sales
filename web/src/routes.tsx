@@ -3,6 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { Navigate, NavLink, Outlet, RouteObject, useLocation, useNavigate } from 'react-router-dom';
 import { ProtectedRoute, useAuth } from './auth';
 import { UserRole } from './auth/storage';
+import { LangToggle } from './i18n/LangToggle';
+import { TranslationKey } from './i18n/translations';
+import { useI18n } from './i18n/I18nContext';
 import { ApiError, api } from './lib/api';
 import { StockAlertsResponse } from './lib/types';
 import { CategoriesPage } from './pages/CategoriesPage';
@@ -17,7 +20,7 @@ import { SuppliersPage } from './pages/SuppliersPage';
 
 type Module = {
   path: string;
-  label: string;
+  labelKey: TranslationKey;
   roles: UserRole[];
 };
 
@@ -25,18 +28,19 @@ const allRoles: UserRole[] = ['admin', 'vendedor', 'almacen'];
 const isDemoMode = import.meta.env.VITE_MODE === 'demo';
 
 export const modules: Module[] = [
-  { path: 'dashboard', label: 'Dashboard', roles: ['admin'] },
-  { path: 'products', label: 'Products', roles: allRoles },
-  { path: 'categories', label: 'Categories', roles: allRoles },
-  { path: 'clients', label: 'Clients', roles: ['admin', 'vendedor'] },
-  { path: 'suppliers', label: 'Suppliers', roles: ['admin', 'vendedor', 'almacen'] },
-  { path: 'sales', label: 'Sales', roles: allRoles },
-  { path: 'stock', label: 'Stock', roles: ['admin', 'almacen'] },
-  { path: 'reports', label: 'Reports', roles: ['admin'] },
+  { path: 'dashboard', labelKey: 'module.dashboard', roles: ['admin'] },
+  { path: 'products', labelKey: 'module.products', roles: allRoles },
+  { path: 'categories', labelKey: 'module.categories', roles: allRoles },
+  { path: 'clients', labelKey: 'module.clients', roles: ['admin', 'vendedor'] },
+  { path: 'suppliers', labelKey: 'module.suppliers', roles: ['admin', 'vendedor', 'almacen'] },
+  { path: 'sales', labelKey: 'module.sales', roles: allRoles },
+  { path: 'stock', labelKey: 'module.stock', roles: ['admin', 'almacen'] },
+  { path: 'reports', labelKey: 'module.reports', roles: ['admin'] },
 ];
 
 function LoginPage() {
   const { login, token } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('admin@inventory.local');
@@ -58,7 +62,7 @@ function LoginPage() {
       await login(email, password);
       navigate(from, { replace: true });
     } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : 'Login failed. Check the credentials and try again.');
+      setError(caught instanceof ApiError ? caught.message : t('auth.loginFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -66,16 +70,19 @@ function LoginPage() {
 
   return (
     <main className="login-page">
+      <div className="login-lang">
+        <LangToggle />
+      </div>
       <section className="panel login-panel" aria-labelledby="login-title">
         <h1 className="wordmark" id="login-title">
-          Inventory
+          {t('app.name')}
         </h1>
-        <p className="login-copy">Sign in to manage inventory, sales, and stock operations.</p>
-        {isDemoMode ? <p className="demo-note">Demo mode - data resets on reload.</p> : null}
+        <p className="login-copy">{t('auth.loginCopy')}</p>
+        {isDemoMode ? <p className="demo-note">{t('auth.demoMode')}</p> : null}
 
         <form className="login-form" onSubmit={handleSubmit}>
           <label>
-            Email
+            {t('auth.email')}
             <input
               type="email"
               autoComplete="email"
@@ -85,7 +92,7 @@ function LoginPage() {
             />
           </label>
           <label>
-            Password
+            {t('auth.password')}
             <input
               type="password"
               autoComplete="current-password"
@@ -96,12 +103,12 @@ function LoginPage() {
           </label>
           {error ? <div className="error-box">{error}</div> : null}
           <button className="primary" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            {isSubmitting ? t('auth.signingIn') : t('auth.signIn')}
           </button>
         </form>
 
         <div className="hint-box">
-          <p>Demo credentials</p>
+          <p>{t('auth.demoCredentials')}</p>
           <ul className="hint-list">
             <li>
               <code>admin@inventory.local</code> / <code>demo1234</code>
@@ -121,6 +128,7 @@ function LoginPage() {
 
 function AppLayout() {
   const { user, role, logout } = useAuth();
+  const { t } = useI18n();
   const visibleModules = useMemo(
     () => modules.filter((module) => role && module.roles.includes(role)),
     [role],
@@ -136,18 +144,21 @@ function AppLayout() {
     <div className="app-layout">
       <aside className="sidebar">
         <NavLink className="sidebar-brand" to="/dashboard">
-          Inventory
+          {t('app.name')}
         </NavLink>
-        <nav className="nav-list" aria-label="Main navigation">
+        <nav className="nav-list" aria-label={t('nav.main')}>
           {visibleModules.map((module) => (
             <NavLink className="nav-link" key={module.path} to={`/${module.path}`}>
-              <span>{module.label}</span>
+              <span>{t(module.labelKey)}</span>
               {module.path === 'stock' && (stockAlerts.data?.total ?? 0) > 0 ? (
                 <span className="nav-badge">{stockAlerts.data?.total}</span>
               ) : null}
             </NavLink>
           ))}
         </nav>
+        <div className="sidebar-footer">
+          <LangToggle />
+        </div>
       </aside>
 
       <div className="app-main">
@@ -155,7 +166,7 @@ function AppLayout() {
           <span className="user-name">{user?.name}</span>
           {role ? <span className="role-badge">{role}</span> : null}
           <button className="ghost" type="button" onClick={logout}>
-            Logout
+            {t('nav.logout')}
           </button>
         </header>
         <main className="content">
@@ -163,15 +174,6 @@ function AppLayout() {
         </main>
       </div>
     </div>
-  );
-}
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <section className="panel placeholder-page">
-      <p className="placeholder-kicker">Phase 6 module</p>
-      <h1>{title}</h1>
-    </section>
   );
 }
 

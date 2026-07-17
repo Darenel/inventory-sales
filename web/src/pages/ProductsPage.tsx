@@ -7,6 +7,7 @@ import { FormField } from '../components/FormField';
 import { Modal } from '../components/Modal';
 import { Pagination } from '../components/Pagination';
 import { SearchInput } from '../components/SearchInput';
+import { useI18n } from '../i18n/I18nContext';
 import { api } from '../lib/api';
 import { Category, ListResponse, Product, SortDir, Supplier } from '../lib/types';
 import { formatCurrency } from '../utils/format';
@@ -35,6 +36,7 @@ const emptyForm: ProductForm = {
 };
 
 export function ProductsPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -99,7 +101,7 @@ export function ProductsPage() {
       ]);
       closeForm();
     },
-    onError: (error) => setFormError(toErrorMessage(error)),
+    onError: (error) => setFormError(toErrorMessage(error, t('common.requestFailed'))),
   });
 
   const deleteMutation = useMutation({
@@ -111,17 +113,17 @@ export function ProductsPage() {
       ]);
       setDeleteTarget(null);
     },
-    onError: (error) => setDeleteError(toErrorMessage(error)),
+    onError: (error) => setDeleteError(toErrorMessage(error, t('common.requestFailed'))),
   });
 
   const columns: DataTableColumn<Product>[] = [
-    { key: 'sku', header: 'SKU', sortable: true, render: (product) => product.sku },
-    { key: 'name', header: 'Name', sortable: true, render: (product) => product.name },
-    { key: 'category', header: 'Category', render: (product) => categoryNames.get(product.categoryId) ?? product.categoryId },
-    { key: 'price', header: 'Price', sortable: true, render: (product) => formatCurrency(product.price) },
+    { key: 'sku', header: t('common.sku'), sortable: true, render: (product) => product.sku },
+    { key: 'name', header: t('common.name'), sortable: true, render: (product) => product.name },
+    { key: 'category', header: t('common.category'), render: (product) => categoryNames.get(product.categoryId) ?? product.categoryId },
+    { key: 'price', header: t('common.price'), sortable: true, render: (product) => formatCurrency(product.price) },
     {
       key: 'stock',
-      header: 'Stock',
+      header: t('common.stock'),
       sortable: true,
       render: (product) => (
         <span className={product.stock <= product.minStock ? 'badge badge-coral' : 'badge'}>
@@ -129,15 +131,15 @@ export function ProductsPage() {
         </span>
       ),
     },
-    { key: 'supplier', header: 'Supplier', render: (product) => supplierNames.get(product.supplierId) ?? product.supplierId },
+    { key: 'supplier', header: t('common.supplier'), render: (product) => supplierNames.get(product.supplierId) ?? product.supplierId },
     {
       key: 'actions',
-      header: '',
+      header: t('common.actions'),
       render: (product) => (
         <RoleGate allow={['admin', 'almacen']}>
           <div className="row-actions">
-            <button type="button" className="ghost" onClick={() => openEdit(product)}>Edit</button>
-            <button type="button" className="ghost danger-text" onClick={() => openDelete(product)}>Delete</button>
+            <button type="button" className="ghost" onClick={() => openEdit(product)}>{t('common.edit')}</button>
+            <button type="button" className="ghost danger-text" onClick={() => openDelete(product)}>{t('common.delete')}</button>
           </div>
         </RoleGate>
       ),
@@ -189,28 +191,28 @@ export function ProductsPage() {
 
   function validateForm() {
     if (!form.sku.trim()) {
-      return 'SKU is required.';
+      return t('validation.skuRequired');
     }
     if (!form.name.trim()) {
-      return 'Name is required.';
+      return t('validation.nameRequired');
     }
     if (!form.categoryId) {
-      return 'Category is required.';
+      return t('validation.categoryRequired');
     }
     if (!form.supplierId) {
-      return 'Supplier is required.';
+      return t('validation.supplierRequired');
     }
 
     const numberFields: Array<keyof ProductForm> = ['price', 'cost', 'stock', 'minStock'];
     for (const field of numberFields) {
       const value = Number(form[field]);
       if (!Number.isFinite(value) || value < 0) {
-        return 'Numbers must be zero or greater.';
+        return t('validation.numbersNonNegative');
       }
     }
 
     if (!Number.isInteger(Number(form.stock)) || !Number.isInteger(Number(form.minStock))) {
-      return 'Stock values must be whole numbers.';
+      return t('validation.stockWholeNumbers');
     }
 
     return null;
@@ -230,59 +232,59 @@ export function ProductsPage() {
     <section className="module-page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Catalog</p>
-          <h1>Products</h1>
+          <p className="eyebrow">{t('page.catalog')}</p>
+          <h1>{t('page.products.title')}</h1>
         </div>
         <RoleGate allow={['admin', 'almacen']}>
-          <button type="button" className="primary" onClick={openCreate}>New product</button>
+          <button type="button" className="primary" onClick={openCreate}>{t('catalog.newProduct')}</button>
         </RoleGate>
       </header>
 
       <div className="panel module-panel">
         <div className="toolbar">
-          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search products" />
-          <select value={categoryId} onChange={(event) => { setCategoryId(event.target.value); setPage(1); }} aria-label="Filter by category">
-            <option value="">All categories</option>
+          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder={t('search.products')} />
+          <select value={categoryId} onChange={(event) => { setCategoryId(event.target.value); setPage(1); }} aria-label={t('common.filterByCategory')}>
+            <option value="">{t('common.allCategories')}</option>
             {(categories.data?.data ?? []).map((category) => (
               <option key={category.id} value={category.id}>{category.name}</option>
             ))}
           </select>
           <label className="inline-check">
             <input type="checkbox" checked={lowStock} onChange={(event) => { setLowStock(event.target.checked); setPage(1); }} />
-            Low stock
+            {t('catalog.lowStock')}
           </label>
         </div>
         <DataTable columns={columns} rows={products.data?.data ?? []} getRowKey={(product) => product.id} loading={products.isLoading} sortBy={sortBy} sortDir={sortDir} onSort={(nextSortBy, nextSortDir) => { setSortBy(nextSortBy); setSortDir(nextSortDir); }} />
         <Pagination page={page} limit={products.data?.limit ?? pageLimit} total={products.data?.total ?? 0} onPageChange={setPage} />
       </div>
 
-      <Modal open={formOpen} title={editing ? 'Edit product' : 'New product'} onClose={closeForm} size="wide">
+      <Modal open={formOpen} title={editing ? t('catalog.editProduct') : t('catalog.newProduct')} onClose={closeForm} size="wide">
         <form onSubmit={handleSubmit}>
           <div className="modal-body form-grid form-grid-2">
-            <FormField label="SKU" value={form.sku} onChange={(event) => setField('sku', event.target.value)} required />
-            <FormField label="Name" value={form.name} onChange={(event) => setField('name', event.target.value)} required />
-            <FormField label="Price" type="number" min="0" step="0.01" value={form.price} onChange={(event) => setField('price', event.target.value)} required />
-            <FormField label="Cost" type="number" min="0" step="0.01" value={form.cost} onChange={(event) => setField('cost', event.target.value)} required />
-            <FormField label="Stock" type="number" min="0" step="1" value={form.stock} onChange={(event) => setField('stock', event.target.value)} required />
-            <FormField label="Minimum stock" type="number" min="0" step="1" value={form.minStock} onChange={(event) => setField('minStock', event.target.value)} required />
-            <FormField label="Category" as="select" value={form.categoryId} onChange={(event) => setField('categoryId', event.target.value)} required>
-              <option value="">Select category</option>
+            <FormField label={t('common.sku')} value={form.sku} onChange={(event) => setField('sku', event.target.value)} required />
+            <FormField label={t('common.name')} value={form.name} onChange={(event) => setField('name', event.target.value)} required />
+            <FormField label={t('common.price')} type="number" min="0" step="0.01" value={form.price} onChange={(event) => setField('price', event.target.value)} required />
+            <FormField label={t('common.cost')} type="number" min="0" step="0.01" value={form.cost} onChange={(event) => setField('cost', event.target.value)} required />
+            <FormField label={t('common.stock')} type="number" min="0" step="1" value={form.stock} onChange={(event) => setField('stock', event.target.value)} required />
+            <FormField label={t('catalog.minimumStock')} type="number" min="0" step="1" value={form.minStock} onChange={(event) => setField('minStock', event.target.value)} required />
+            <FormField label={t('common.category')} as="select" value={form.categoryId} onChange={(event) => setField('categoryId', event.target.value)} required>
+              <option value="">{t('common.selectCategory')}</option>
               {(categories.data?.data ?? []).map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
             </FormField>
-            <FormField label="Supplier" as="select" value={form.supplierId} onChange={(event) => setField('supplierId', event.target.value)} required>
-              <option value="">Select supplier</option>
+            <FormField label={t('common.supplier')} as="select" value={form.supplierId} onChange={(event) => setField('supplierId', event.target.value)} required>
+              <option value="">{t('common.selectSupplier')}</option>
               {(suppliers.data?.data ?? []).map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
             </FormField>
             {formError ? <div className="error-box full-span">{formError}</div> : null}
           </div>
           <footer className="modal-actions">
-            <button type="button" className="ghost" onClick={closeForm}>Cancel</button>
-            <button type="submit" className="primary" disabled={saveMutation.isPending}>{saveMutation.isPending ? 'Saving...' : 'Save'}</button>
+            <button type="button" className="ghost" onClick={closeForm}>{t('common.cancel')}</button>
+            <button type="submit" className="primary" disabled={saveMutation.isPending}>{saveMutation.isPending ? t('common.saving') : t('common.save')}</button>
           </footer>
         </form>
       </Modal>
 
-      <ConfirmDialog open={Boolean(deleteTarget)} title="Delete product" message={`Delete ${deleteTarget?.name ?? 'this product'}?`} loading={deleteMutation.isPending} error={deleteError} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)} />
+      <ConfirmDialog open={Boolean(deleteTarget)} title={t('delete.productMessage')} message={`${t('common.delete')} ${deleteTarget?.name ?? t('delete.productFallback')}?`} loading={deleteMutation.isPending} error={deleteError} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)} />
     </section>
   );
 }

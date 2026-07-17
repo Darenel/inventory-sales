@@ -7,6 +7,7 @@ import { FormField } from '../components/FormField';
 import { Modal } from '../components/Modal';
 import { Pagination } from '../components/Pagination';
 import { SearchInput } from '../components/SearchInput';
+import { useI18n } from '../i18n/I18nContext';
 import { api } from '../lib/api';
 import { ListResponse, SortDir, Supplier } from '../lib/types';
 import { formatDate } from '../utils/format';
@@ -22,6 +23,7 @@ type SupplierForm = {
 const emptyForm: SupplierForm = { name: '', email: '', phone: '', address: '' };
 
 export function SuppliersPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -56,7 +58,7 @@ export function SuppliersPage() {
       await queryClient.invalidateQueries({ queryKey: ['suppliers'] });
       closeForm();
     },
-    onError: (error) => setFormError(toErrorMessage(error)),
+    onError: (error) => setFormError(toErrorMessage(error, t('common.requestFailed'))),
   });
 
   const deleteMutation = useMutation({
@@ -65,22 +67,22 @@ export function SuppliersPage() {
       await queryClient.invalidateQueries({ queryKey: ['suppliers'] });
       setDeleteTarget(null);
     },
-    onError: (error) => setDeleteError(toErrorMessage(error)),
+    onError: (error) => setDeleteError(toErrorMessage(error, t('common.requestFailed'))),
   });
 
   const columns: DataTableColumn<Supplier>[] = [
-    { key: 'name', header: 'Name', sortable: true, render: (supplier) => supplier.name },
-    { key: 'email', header: 'Email', sortable: true, render: (supplier) => supplier.email ?? '-' },
-    { key: 'phone', header: 'Phone', render: (supplier) => supplier.phone ?? '-' },
-    { key: 'createdAt', header: 'Created', sortable: true, render: (supplier) => formatDate(supplier.createdAt) },
+    { key: 'name', header: t('common.name'), sortable: true, render: (supplier) => supplier.name },
+    { key: 'email', header: t('common.email'), sortable: true, render: (supplier) => supplier.email ?? '-' },
+    { key: 'phone', header: t('common.phone'), render: (supplier) => supplier.phone ?? '-' },
+    { key: 'createdAt', header: t('common.created'), sortable: true, render: (supplier) => formatDate(supplier.createdAt) },
     {
       key: 'actions',
-      header: '',
+      header: t('common.actions'),
       render: (supplier) => (
         <RoleGate allow={['admin', 'almacen']}>
           <div className="row-actions">
-            <button type="button" className="ghost" onClick={() => openEdit(supplier)}>Edit</button>
-            <button type="button" className="ghost danger-text" onClick={() => openDelete(supplier)}>Delete</button>
+            <button type="button" className="ghost" onClick={() => openEdit(supplier)}>{t('common.edit')}</button>
+            <button type="button" className="ghost danger-text" onClick={() => openDelete(supplier)}>{t('common.delete')}</button>
           </div>
         </RoleGate>
       ),
@@ -123,7 +125,7 @@ export function SuppliersPage() {
     setFormError(null);
 
     if (!form.name.trim()) {
-      setFormError('Name is required.');
+      setFormError(t('validation.nameRequired'));
       return;
     }
 
@@ -134,39 +136,39 @@ export function SuppliersPage() {
     <section className="module-page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Catalog</p>
-          <h1>Suppliers</h1>
+          <p className="eyebrow">{t('page.catalog')}</p>
+          <h1>{t('page.suppliers.title')}</h1>
         </div>
         <RoleGate allow={['admin', 'almacen']}>
-          <button type="button" className="primary" onClick={openCreate}>New supplier</button>
+          <button type="button" className="primary" onClick={openCreate}>{t('catalog.newSupplier')}</button>
         </RoleGate>
       </header>
 
       <div className="panel module-panel">
         <div className="toolbar">
-          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search suppliers" />
+          <SearchInput value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder={t('search.suppliers')} />
         </div>
         <DataTable columns={columns} rows={suppliers.data?.data ?? []} getRowKey={(supplier) => supplier.id} loading={suppliers.isLoading} sortBy={sortBy} sortDir={sortDir} onSort={(nextSortBy, nextSortDir) => { setSortBy(nextSortBy); setSortDir(nextSortDir); }} />
         <Pagination page={page} limit={suppliers.data?.limit ?? pageLimit} total={suppliers.data?.total ?? 0} onPageChange={setPage} />
       </div>
 
-      <Modal open={formOpen} title={editing ? 'Edit supplier' : 'New supplier'} onClose={closeForm}>
+      <Modal open={formOpen} title={editing ? t('catalog.editSupplier') : t('catalog.newSupplier')} onClose={closeForm}>
         <form onSubmit={handleSubmit}>
           <div className="modal-body form-grid">
-            <FormField label="Name" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required />
-            <FormField label="Email" type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} />
-            <FormField label="Phone" value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} />
-            <FormField label="Address" as="textarea" rows={3} value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} />
+            <FormField label={t('common.name')} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required />
+            <FormField label={t('common.email')} type="email" value={form.email} onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))} />
+            <FormField label={t('common.phone')} value={form.phone} onChange={(event) => setForm((current) => ({ ...current, phone: event.target.value }))} />
+            <FormField label={t('common.address')} as="textarea" rows={3} value={form.address} onChange={(event) => setForm((current) => ({ ...current, address: event.target.value }))} />
             {formError ? <div className="error-box">{formError}</div> : null}
           </div>
           <footer className="modal-actions">
-            <button type="button" className="ghost" onClick={closeForm}>Cancel</button>
-            <button type="submit" className="primary" disabled={saveMutation.isPending}>{saveMutation.isPending ? 'Saving...' : 'Save'}</button>
+            <button type="button" className="ghost" onClick={closeForm}>{t('common.cancel')}</button>
+            <button type="submit" className="primary" disabled={saveMutation.isPending}>{saveMutation.isPending ? t('common.saving') : t('common.save')}</button>
           </footer>
         </form>
       </Modal>
 
-      <ConfirmDialog open={Boolean(deleteTarget)} title="Delete supplier" message={`Delete ${deleteTarget?.name ?? 'this supplier'}?`} loading={deleteMutation.isPending} error={deleteError} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)} />
+      <ConfirmDialog open={Boolean(deleteTarget)} title={t('delete.supplierMessage')} message={`${t('common.delete')} ${deleteTarget?.name ?? t('delete.supplierFallback')}?`} loading={deleteMutation.isPending} error={deleteError} onClose={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget)} />
     </section>
   );
 }

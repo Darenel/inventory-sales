@@ -154,10 +154,17 @@ th {
 }
 
 .login-page {
+  position: relative;
   min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 24px;
+}
+
+.login-lang {
+  position: fixed;
+  top: 18px;
+  right: 18px;
 }
 
 .login-panel {
@@ -254,6 +261,10 @@ th {
 .nav-list {
   display: grid;
   gap: 8px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
 }
 
 .nav-link {
@@ -794,6 +805,35 @@ th {
 .range-toggle button.active {
   color: var(--paper);
   background: var(--chart-1);
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-cut);
+  padding: 4px 6px;
+  color: var(--quiet);
+  background: rgba(20, 23, 28, 0.72);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.lang-toggle button {
+  min-height: 28px;
+  border: 0;
+  border-radius: var(--r-cut-sm);
+  padding: 0 7px;
+  color: var(--muted);
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.lang-toggle button.active {
+  color: var(--paper);
+  background: var(--menta);
 }
 
 .chart-frame {

@@ -14,6 +14,7 @@ import {
   YAxis,
 } from 'recharts';
 import { api } from '../lib/api';
+import { useI18n } from '../i18n/I18nContext';
 import { formatCurrency } from '../utils/format';
 import { buildQuery, toErrorMessage } from './pageUtils';
 
@@ -77,6 +78,8 @@ function formatChartDate(value: string) {
 }
 
 function RangeToggle({ value, onChange, label }: { value: RangeDays; onChange: (value: RangeDays) => void; label: string }) {
+  const { t } = useI18n();
+
   return (
     <div className="range-toggle" role="group" aria-label={label}>
       {ranges.map((range) => (
@@ -87,7 +90,7 @@ function RangeToggle({ value, onChange, label }: { value: RangeDays; onChange: (
           aria-pressed={value === range}
           onClick={() => onChange(range)}
         >
-          {range}d
+          {range}{t('dashboard.daysSuffix')}
         </button>
       ))}
     </div>
@@ -95,18 +98,22 @@ function RangeToggle({ value, onChange, label }: { value: RangeDays; onChange: (
 }
 
 function ChartState({ loading, error, empty }: { loading: boolean; error?: string | null; empty?: string }) {
+  const { t } = useI18n();
+
   if (loading) {
-    return <div className="chart-state">Loading...</div>;
+    return <div className="chart-state">{t('dashboard.chartLoading')}</div>;
   }
 
   if (error) {
     return <div className="chart-state">{error}</div>;
   }
 
-  return <div className="chart-state">{empty ?? 'No records found.'}</div>;
+  return <div className="chart-state">{empty ?? t('common.noRecords')}</div>;
 }
 
 function RevenueTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ payload: RevenuePoint }>; label?: string }) {
+  const { t } = useI18n();
+
   if (!active || !payload?.length) {
     return null;
   }
@@ -117,12 +124,14 @@ function RevenueTooltip({ active, payload, label }: { active?: boolean; payload?
     <div className="chart-tooltip">
       <strong>{label ? formatChartDate(label) : ''}</strong>
       <span>{formatCurrency(point.revenue)}</span>
-      <small>{point.salesCount} sales</small>
+      <small>{point.salesCount} {t('dashboard.sales')}</small>
     </div>
   );
 }
 
 function ProductTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: ProductBar }> }) {
+  const { t } = useI18n();
+
   if (!active || !payload?.length) {
     return null;
   }
@@ -134,7 +143,7 @@ function ProductTooltip({ active, payload }: { active?: boolean; payload?: Array
       <strong>{product.name}</strong>
       <small>{product.sku}</small>
       <span>{formatCurrency(product.revenue)}</span>
-      <small>{product.unitsSold} units</small>
+      <small>{product.unitsSold} {t('dashboard.units')}</small>
     </div>
   );
 }
@@ -160,6 +169,7 @@ function StatTile({
 }
 
 export function DashboardPage() {
+  const { t } = useI18n();
   const [revenueDays, setRevenueDays] = useState<RangeDays>(30);
   const [productsDays, setProductsDays] = useState<RangeDays>(30);
 
@@ -191,16 +201,16 @@ export function DashboardPage() {
       revenue: toNumber(product.revenue),
     })) ?? [];
 
-  const summaryError = summary.error ? toErrorMessage(summary.error, 'Could not load dashboard summary.') : null;
-  const seriesError = salesSeries.error ? toErrorMessage(salesSeries.error, 'Could not load revenue chart.') : null;
-  const productsError = topProducts.error ? toErrorMessage(topProducts.error, 'Could not load top products.') : null;
+  const summaryError = summary.error ? toErrorMessage(summary.error, t('dashboard.couldNotLoadSummary')) : null;
+  const seriesError = salesSeries.error ? toErrorMessage(salesSeries.error, t('dashboard.couldNotLoadRevenue')) : null;
+  const productsError = topProducts.error ? toErrorMessage(topProducts.error, t('dashboard.couldNotLoadProducts')) : null;
 
   return (
     <section className="module-page dashboard-page">
       <header className="page-header">
         <div>
-          <p className="eyebrow">Overview</p>
-          <h1>Dashboard</h1>
+          <p className="eyebrow">{t('dashboard.overview')}</p>
+          <h1>{t('dashboard.title')}</h1>
         </div>
       </header>
 
@@ -208,44 +218,44 @@ export function DashboardPage() {
 
       <div className="kpi-grid">
         <StatTile
-          label="Revenue today"
+          label={t('dashboard.revenueToday')}
           value={formatCurrency(summary.data?.revenueToday ?? 0)}
-          subline={`${summary.data?.salesCountToday ?? 0} sales`}
+          subline={`${summary.data?.salesCountToday ?? 0} ${t('dashboard.sales')}`}
         />
         <StatTile
-          label="Revenue 7d"
+          label={t('dashboard.revenue7d')}
           value={formatCurrency(summary.data?.revenue7d ?? 0)}
-          subline={`${summary.data?.salesCount7d ?? 0} sales`}
+          subline={`${summary.data?.salesCount7d ?? 0} ${t('dashboard.sales')}`}
         />
         <StatTile
-          label="Revenue 30d"
+          label={t('dashboard.revenue30d')}
           value={formatCurrency(summary.data?.revenue30d ?? 0)}
-          subline={`${summary.data?.salesCount30d ?? 0} sales`}
+          subline={`${summary.data?.salesCount30d ?? 0} ${t('dashboard.sales')}`}
         />
         <Link className="panel stat-tile status-tile" to="/stock">
           <span className="status-icon" aria-hidden="true">
             !
           </span>
-          <span className="stat-label">Low stock</span>
+          <span className="stat-label">{t('dashboard.lowStock')}</span>
           <strong>{summary.data?.lowStockCount ?? 0}</strong>
-          <small>Stock alerts</small>
+          <small>{t('dashboard.stockAlerts')}</small>
         </Link>
-        <StatTile label="Products" value={summary.data?.productCount ?? 0} quiet />
-        <StatTile label="Clients" value={summary.data?.clientCount ?? 0} quiet />
+        <StatTile label={t('dashboard.products')} value={summary.data?.productCount ?? 0} quiet />
+        <StatTile label={t('dashboard.clients')} value={summary.data?.clientCount ?? 0} quiet />
       </div>
 
       <div className="dashboard-charts">
         <section className="panel chart-panel">
           <div className="chart-panel-header">
             <div>
-              <p className="eyebrow">Revenue</p>
-              <h2>Sales revenue</h2>
+              <p className="eyebrow">{t('dashboard.revenueEyebrow')}</p>
+              <h2>{t('dashboard.salesRevenue')}</h2>
             </div>
-            <RangeToggle value={revenueDays} onChange={setRevenueDays} label="Revenue range" />
+            <RangeToggle value={revenueDays} onChange={setRevenueDays} label={t('dashboard.revenueRange')} />
           </div>
 
           {salesSeries.isLoading || seriesError || revenueData.length === 0 ? (
-            <ChartState loading={salesSeries.isLoading} error={seriesError} empty="No revenue records found." />
+            <ChartState loading={salesSeries.isLoading} error={seriesError} empty={t('dashboard.noRevenueRecords')} />
           ) : (
             <div className="chart-frame">
               <ResponsiveContainer width="100%" height="100%">
@@ -284,14 +294,14 @@ export function DashboardPage() {
         <section className="panel chart-panel">
           <div className="chart-panel-header">
             <div>
-              <p className="eyebrow">Products</p>
-              <h2>Top products by revenue</h2>
+              <p className="eyebrow">{t('dashboard.productsEyebrow')}</p>
+              <h2>{t('dashboard.topProductsByRevenue')}</h2>
             </div>
-            <RangeToggle value={productsDays} onChange={setProductsDays} label="Top products range" />
+            <RangeToggle value={productsDays} onChange={setProductsDays} label={t('dashboard.topProductsRange')} />
           </div>
 
           {topProducts.isLoading || productsError || productData.length === 0 ? (
-            <ChartState loading={topProducts.isLoading} error={productsError} empty="No product sales found." />
+            <ChartState loading={topProducts.isLoading} error={productsError} empty={t('dashboard.noProductSales')} />
           ) : (
             <div className="chart-frame">
               <ResponsiveContainer width="100%" height="100%">

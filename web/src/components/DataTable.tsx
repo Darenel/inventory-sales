@@ -1,4 +1,5 @@
 import { SortDir } from '../lib/types';
+import { useI18n } from '../i18n/I18nContext';
 
 export type DataTableColumn<T> = {
   key: string;
@@ -24,12 +25,14 @@ export function DataTable<T>({
   rows,
   getRowKey,
   loading = false,
-  emptyMessage = 'No records found.',
+  emptyMessage,
   sortBy,
   sortDir = 'asc',
   onSort,
   onRowClick,
 }: DataTableProps<T>) {
+  const { t } = useI18n();
+
   function handleSort(column: DataTableColumn<T>) {
     if (!column.sortable || !onSort) {
       return;
@@ -60,11 +63,11 @@ export function DataTable<T>({
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan={columns.length}>Loading...</td>
+              <td colSpan={columns.length}>{t('common.loading')}</td>
             </tr>
           ) : rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length}>{emptyMessage}</td>
+              <td colSpan={columns.length}>{emptyMessage ?? t('common.noRecords')}</td>
             </tr>
           ) : (
             rows.map((row) => (

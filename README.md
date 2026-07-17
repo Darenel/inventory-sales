@@ -10,6 +10,7 @@ Inventory Sales is a small inventory, sales, and reporting app for teams that ne
 - Product, category, supplier, and client management
 - Sales creation with stock checks and stock movement history
 - Dashboard summaries, stock alerts, and sales/stock reports
+- Bilingual web UI in English and Spanish
 - Swagger API docs at `/docs`
 
 ## Stack
